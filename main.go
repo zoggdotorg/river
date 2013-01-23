@@ -18,7 +18,7 @@ import (
 )
 
 var font *truetype.Font
-var imageTime int64
+var imageTime time.Time
 var imageBytes []byte
 var imageMutex sync.Mutex
 
@@ -45,7 +45,7 @@ func getImage() []byte {
 	defer imageMutex.Unlock()
 
 	now := time.Now()
-	if now.Unix() > imageTime+60 {
+	if now.Sub(imageTime).Seconds() > 60 {
 		log.Println("Generating Image")
 
 		// Remove existing image file.
@@ -103,7 +103,7 @@ func getImage() []byte {
 		if err != nil {
 			log.Panic(err)
 		}
-		imageTime = now.Unix()
+		imageTime = now
 		imageBytes = newImage.Bytes()
 
 	}
