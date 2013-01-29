@@ -37,6 +37,7 @@ func setup() {
 func main() {
 	setup()
 	http.HandleFunc("/", handler)
+	log.Println("River Starting.")
 	http.ListenAndServe(":8000", nil)
 }
 
