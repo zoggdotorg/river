@@ -98,9 +98,8 @@ func getImage() []byte {
 		}
 
 		// Produce jpeg of new image.
-		options := jpeg.Options{90}
 		newImage := new(bytes.Buffer)
-		err = jpeg.Encode(newImage, rgba, &options)
+		err = jpeg.Encode(newImage, rgba, &jpeg.Options{Quality: 90})
 		if err != nil {
 			log.Panic(err)
 		}
