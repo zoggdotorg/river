@@ -22,7 +22,7 @@ var imageTime time.Time
 var imageBytes []byte
 var imageMutex sync.Mutex
 
-func setup() {
+func init() {
 	// Read the font data.
 	fontBytes, err := ioutil.ReadFile("luxisr.ttf")
 	if err != nil {
@@ -35,10 +35,18 @@ func setup() {
 }
 
 func main() {
-	setup()
-	http.HandleFunc("/", handler)
 	log.Println("River Starting.")
+	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8000", nil)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	w.Write(getImage())
 }
 
 func getImage() []byte {
@@ -108,14 +116,4 @@ func getImage() []byte {
 
 	}
 	return imageBytes
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-
-	w.Write(getImage())
 }
