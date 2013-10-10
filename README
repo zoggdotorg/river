@@ -1,1 +1,4 @@
 A simple webcam server for a raspberry pi and a USB web-cam.
+
+The luxisr.ttf file and associated COPYING file came from https://code.google.com/p/freetype-go/
+
