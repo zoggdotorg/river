@@ -37,7 +37,7 @@ func init() {
 func main() {
 	log.Println("River Starting.")
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8000", nil)
+	http.ListenAndServe(":80", nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +61,7 @@ func getImage() []byte {
 		_ = os.Remove("pic.jpeg")
 
 		// Generate new image.
-		cmd := exec.Command("/usr/bin/streamer", "-c", "/dev/video0", "-o", "pic.jpeg", "-s", "640x360", "-j", "90")
+		cmd := exec.Command("/usr/bin/streamer", "-c", "/dev/video0", "-o", "pic.jpeg", "-s", "640x480", "-j", "90")
 		err := cmd.Run()
 		if err != nil {
 			log.Panic(err)

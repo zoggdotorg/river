@@ -1,2 +1,2 @@
 #!/bin/bash
-nohup river >& log.txt &
+nohup ~don/mygo/bin/river >& log.txt &
