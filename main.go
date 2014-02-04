@@ -54,7 +54,7 @@ func getImage() []byte {
 	defer imageMutex.Unlock()
 
 	now := time.Now()
-	if now.Sub(imageTime).Seconds() > 60 {
+	if now.Sub(imageTime).Seconds() > 2 {
 		log.Println("Generating Image")
 
 		// Remove existing image file.
