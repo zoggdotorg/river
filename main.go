@@ -49,6 +49,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Write(getImage())
 }
 
+func getVideo() string {
+	if _, err := os.Stat("/dev/video0"); err == nil {
+		return "/dev/video0"
+	}
+	if _, err := os.Stat("/dev/video1"); err == nil {
+		return "/dev/video1"
+	}
+	if _, err := os.Stat("/dev/video2"); err == nil {
+		return "/dev/video2"
+	}
+	return "/dev/video3"
+}
+
 func getImage() []byte {
 	imageMutex.Lock()
 	defer imageMutex.Unlock()
@@ -61,7 +74,7 @@ func getImage() []byte {
 		_ = os.Remove("pic.jpeg")
 
 		// Generate new image.
-		cmd := exec.Command("/usr/bin/streamer", "-c", "/dev/video0", "-o", "pic.jpeg", "-s", "640x480", "-j", "90")
+		cmd := exec.Command("/usr/bin/streamer", "-c", getVideo(), "-o", "pic.jpeg", "-s", "640x480", "-j", "90")
 		err := cmd.Run()
 		if err != nil {
 			log.Panic(err)
