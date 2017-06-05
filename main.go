@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"code.google.com/p/freetype-go/freetype"
 	"code.google.com/p/freetype-go/freetype/truetype"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -47,7 +48,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	image := getImage()
-	if image != nil {
+	if image == nil {
+		fmt.Fprintf(w, "Could not obtain image")
+	} else {
 		w.Write(image)
 	}
 }
@@ -95,7 +98,7 @@ func getImage() []byte {
 		_ = os.Remove("pic.jpeg")
 
 		// Generate new image.
-		cmd := exec.Command("/usr/bin/streamer", "-c", getVideo(), "-o", "pic.jpeg", "-s", "640x480", "-j", "90")
+		cmd := exec.Command("/usr/bin/vgrabbj", "-d", getVideo(), "-f", "pic.jpeg", "-i", "svga", "-q", "90")
 		err := cmd.Run()
 		if err != nil {
 			log.Println(err)
