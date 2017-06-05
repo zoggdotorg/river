@@ -46,7 +46,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Write(getImage())
+	image := getImage()
+	if image != nil {
+		w.Write(image)
+	}
 }
 
 func getVideo() string {
@@ -59,7 +62,25 @@ func getVideo() string {
 	if _, err := os.Stat("/dev/video2"); err == nil {
 		return "/dev/video2"
 	}
-	return "/dev/video3"
+	if _, err := os.Stat("/dev/video3"); err == nil {
+		return "/dev/video3"
+	}
+	if _, err := os.Stat("/dev/video4"); err == nil {
+		return "/dev/video4"
+	}
+	if _, err := os.Stat("/dev/video5"); err == nil {
+		return "/dev/video5"
+	}
+	if _, err := os.Stat("/dev/video6"); err == nil {
+		return "/dev/video6"
+	}
+	if _, err := os.Stat("/dev/video7"); err == nil {
+		return "/dev/video7"
+	}
+	if _, err := os.Stat("/dev/video8"); err == nil {
+		return "/dev/video8"
+	}
+	return "/dev/video9"
 }
 
 func getImage() []byte {
@@ -77,7 +98,8 @@ func getImage() []byte {
 		cmd := exec.Command("/usr/bin/streamer", "-c", getVideo(), "-o", "pic.jpeg", "-s", "640x480", "-j", "90")
 		err := cmd.Run()
 		if err != nil {
-			log.Panic(err)
+			log.Println(err)
+			return nil
 		}
 
 		// Open the image file.
