@@ -98,10 +98,9 @@ func makeImages(secondsDelay int) {
 		// Delay between making an image
 		time.Sleep(time.Duration(secondsDelay) * time.Second)
 
-		log.Println("Generating Image")
-		now := time.Now()
 
 		// Generate new image.
+		now := time.Now()
 		out, err := exec.Command("/usr/bin/vgrabbj", "-d", getVideo(), "-i", "svga", "-q", "90").Output()
 		if err != nil {
 			log.Println(err)
