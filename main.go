@@ -98,22 +98,14 @@ func getImage() []byte {
 		_ = os.Remove("pic.jpeg")
 
 		// Generate new image.
-		cmd := exec.Command("/usr/bin/vgrabbj", "-d", getVideo(), "-f", "pic.jpeg", "-i", "svga", "-q", "90")
-		err := cmd.Run()
+		out, err := exec.Command("/usr/bin/vgrabbj", "-d", getVideo(), "-i", "svga", "-q", "90").Output()
 		if err != nil {
 			log.Println(err)
 			return nil
 		}
 
-		// Open the image file.
-		file, err := os.Open("pic.jpeg")
-		if err != nil {
-			log.Panic(err)
-		}
-		defer file.Close()
-
 		// Decode the image.
-		src, _, err := image.Decode(file)
+		src, _, err := image.Decode(bytes.NewReader(out))
 		if err != nil {
 			log.Panic(err)
 		}
