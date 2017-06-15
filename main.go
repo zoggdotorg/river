@@ -19,7 +19,6 @@ import (
 )
 
 var font *truetype.Font
-var imageTime time.Time
 var imageBytes []byte
 var imageMutex sync.Mutex
 
@@ -37,6 +36,8 @@ func init() {
 
 func main() {
 	log.Println("River Starting.")
+
+	go makeImages(30)
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
@@ -89,25 +90,29 @@ func getVideo() string {
 func getImage() []byte {
 	imageMutex.Lock()
 	defer imageMutex.Unlock()
+	return imageBytes
+}
 
-	now := time.Now()
-	if now.Sub(imageTime).Seconds() > 2 {
+func makeImages(secondsDelay int) {
+	for {
+		// Delay between making an image
+		time.Sleep(time.Duration(secondsDelay) * time.Second)
+
 		log.Println("Generating Image")
-
-		// Remove existing image file.
-		_ = os.Remove("pic.jpeg")
+		now := time.Now()
 
 		// Generate new image.
 		out, err := exec.Command("/usr/bin/vgrabbj", "-d", getVideo(), "-i", "svga", "-q", "90").Output()
 		if err != nil {
 			log.Println(err)
-			return nil
+			continue
 		}
 
 		// Decode the image.
 		src, _, err := image.Decode(bytes.NewReader(out))
 		if err != nil {
-			log.Panic(err)
+			log.Println(err)
+			continue
 		}
 
 		// Time
@@ -132,18 +137,20 @@ func getImage() []byte {
 		pt := freetype.Pt(10, 10+int(c.PointToFix32(size)>>8))
 		_, err = c.DrawString(label, pt)
 		if err != nil {
-			log.Panic(err)
+			log.Println(err)
+			continue
 		}
 
 		// Produce jpeg of new image.
 		newImage := new(bytes.Buffer)
 		err = jpeg.Encode(newImage, rgba, &jpeg.Options{Quality: 90})
 		if err != nil {
-			log.Panic(err)
+			log.Println(err)
+			continue
 		}
-		imageTime = now
-		imageBytes = newImage.Bytes()
 
+		imageMutex.Lock()
+		imageBytes = newImage.Bytes()
+		imageMutex.Unlock()
 	}
-	return imageBytes
 }
