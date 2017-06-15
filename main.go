@@ -32,6 +32,10 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// To work around bug in image capture vgrabbj that sometimes
+	// returns a green screen (RasPi specific library location).
+	os.Setenv("LD_PRELOAD","/usr/lib/arm-linux-gnueabihf/libv4l/v4l1compat.so")
 }
 
 func main() {
@@ -94,10 +98,11 @@ func getImage() []byte {
 }
 
 func makeImages(secondsDelay int) {
+	delay := 0
 	for {
 		// Delay between making an image
-		time.Sleep(time.Duration(secondsDelay) * time.Second)
-
+		time.Sleep(time.Duration(delay) * time.Second)
+		delay = secondsDelay
 
 		// Generate new image.
 		now := time.Now()
