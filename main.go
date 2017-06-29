@@ -2,9 +2,10 @@ package main
 
 import (
 	"bytes"
-	"code.google.com/p/freetype-go/freetype"
-	"code.google.com/p/freetype-go/freetype/truetype"
 	"fmt"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/math/fixed"
 	"image"
 	"image/color"
 	"image/draw"
@@ -35,7 +36,7 @@ func init() {
 
 	// To work around bug in image capture vgrabbj that sometimes
 	// returns a green screen (RasPi specific library location).
-	os.Setenv("LD_PRELOAD","/usr/lib/arm-linux-gnueabihf/libv4l/v4l1compat.so")
+	os.Setenv("LD_PRELOAD", "/usr/lib/arm-linux-gnueabihf/libv4l/v4l1compat.so")
 }
 
 func main() {
@@ -97,6 +98,10 @@ func getImage() []byte {
 	return imageBytes
 }
 
+func PointToInt26_6(x, dpi float64) fixed.Int26_6 {
+	return fixed.Int26_6(x * dpi * (64.0 / 72.0))
+}
+
 func makeImages(secondsDelay int) {
 	delay := 0
 	for {
@@ -138,7 +143,7 @@ func makeImages(secondsDelay int) {
 		c.SetClip(rgba.Bounds())
 		c.SetDst(rgba)
 		c.SetSrc(fg)
-		pt := freetype.Pt(10, 10+int(c.PointToFix32(size)>>8))
+		pt := freetype.Pt(10, 10+int(PointToInt26_6(size, 72)>>6))
 		_, err = c.DrawString(label, pt)
 		if err != nil {
 			log.Println(err)
